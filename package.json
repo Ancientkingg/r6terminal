@@ -1,0 +1,21 @@
+{
+  "name": "testjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test.js",
+  "scripts": {
+    "build": "nexe -t windows-x64-12.10.0 --resource \"*.js|*.bat|depotdownloader\\*\""
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nexe": "^3.3.7"
+  },
+  "dependencies": {
+    "input": "^1.0.1",
+    "path": "^0.12.7",
+    "precisebar": "^2.0.2",
+    "progress": "^2.0.3",
+    "progressbar": "^1.3.0"
+  }
+}
