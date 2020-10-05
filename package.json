@@ -2,9 +2,9 @@
   "name": "testjs",
   "version": "1.0.0",
   "description": "",
-  "main": "test.js",
+  "main": "main.js",
   "scripts": {
-    "build": "nexe -t windows-x64-12.10.0 --resource \"*.js|*.bat|depotdownloader\\*\""
+    "build": "nexe -t windows-x64-12.10.0"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "adm-zip": "^0.4.16",
+    "chalk": "^4.1.0",
     "input": "^1.0.1",
     "path": "^0.12.7",
     "superagent": "^6.1.0"

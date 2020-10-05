@@ -1,6 +1,5 @@
 @echo off
 set /A percent=0
-
 :percent
 PING localhost -n 2 >NUL
 set /A percent=%percent%+1
