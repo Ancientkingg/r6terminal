@@ -120,22 +120,129 @@ function render({
                 props: {
                     text: "Press X to See Logs"
                 }
+            }),
+            new Text({
+                x: Math.floor(width-15),
+                y: height,
+                props: {
+                    text: "Press Q to quit"
+                }
             })
         ]
     }));
 }
 
-ui.render(new Component({
-    x: 0, y: 0, children: [
-        new Text({
-            x: Math.floor(width/2-6),
-            y: Math.floor(height / 2),
-            props: {
-                text: "Test to see"
-            }
-        })
-    ]
-}));
+function SAC(){
+    ui.render(new Component({
+        x: 0, y: 0, children: [
+            new Text({
+                x: Math.floor(width/2-14),
+                y: Math.floor(height / 2),
+                props: {
+                    text: "║Starting up and configuring║"
+                }
+            }),
+            new Text({
+                x: Math.floor(width/2-14),
+                y: Math.floor(height/2 + 1),
+                props: {
+                    text: "╚═══════════════════════════╝"
+                }
+            }),
+            new Text({
+                x: Math.floor(width/2-14),
+                y: Math.floor(height/2 - 1),
+                props: {
+                    text: "╔═══════════════════════════╗"
+                }
+            })
+        ]
+    }));
+}
+
+function loginDescription(){
+    ui.render(new Component({
+        x: 0, y: 0, children: [
+            new Text({
+                x: 0,
+                y: Math.floor(height-2),
+                props: {
+                    text: " Please enter your steam login credentials"
+                }
+            }),
+            new Text({
+                x: 0,
+                y: Math.floor(height-1),
+                props: {
+                    text: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                }
+            })
+        ]
+    }));
+}
+
+function quit(){
+    ui.render(new Component({
+        x: 0, y: 0, children: [
+            new Text({
+                x: Math.floor(width/2-14),
+                y: Math.floor(height/2 + 2),
+                props: {
+                    text: "╚═══════════════════════════╝"
+                }
+            }),
+            new Text({
+                x: Math.floor(width/2-14),
+                y: Math.floor(height/2 - 1),
+                props: {
+                    text: "╔═══════════════════════════╗"
+                }
+            }),
+            new Text({
+                x: Math.floor(width/2-14),
+                y: Math.floor(height/2),
+                props: {
+                    text: "║  Please confirm to quit!  ║"
+                }
+            }),
+            new Text({
+                x: Math.floor(width/2-14),
+                y: Math.floor(height/2 + 1),
+                props: {
+                    text: "║            Y/N            ║"
+                }
+            })
+        ]
+    }));
+}
+
+function quitconfirm(){
+    ui.render(new Component({
+        x: 0, y: 0, children: [
+            new Text({
+                x: Math.floor(width/2-14),
+                y: Math.floor(height / 2),
+                props: {
+                    text: "║ Quitting the application! ║"
+                }
+            }),
+            new Text({
+                x: Math.floor(width/2-14),
+                y: Math.floor(height/2 + 1),
+                props: {
+                    text: "╚═══════════════════════════╝"
+                }
+            }),
+            new Text({
+                x: Math.floor(width/2-14),
+                y: Math.floor(height/2 - 1),
+                props: {
+                    text: "╔═══════════════════════════╗"
+                }
+            })
+        ]
+    }));
+}
 
 // let percent = 0;
 // const id = setInterval(() => {
@@ -149,7 +256,11 @@ ui.render(new Component({
 //     percent += Math.random();
 // }, 100);
 
-module.exports = render
+module.exports.render = render
+module.exports.SAC = SAC
+module.exports.loginDescription = loginDescription
+module.exports.quit = quit
+module.exports.quitconfirm = quitconfirm
 
 
 // if(percent >= 100){
