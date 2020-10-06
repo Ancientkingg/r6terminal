@@ -6,6 +6,7 @@ const input = require('input');
 const fs = require('fs');
 const tempdir = process.env.TEMP + '\\r6terminal';
 const tempdirzip = tempdir.split("\\").join("\\\\") + "\\dpd.zip";
+const tempdirresources = tempdir.split("\\").join("\\\\") + "\\resources";
 const request = require('superagent');
 const admZip = require('adm-zip');
 const source = `https://github.com/Ancientkingg/r6terminal/blob/master/depotdownloader/dpd.zip?raw=true`;
@@ -49,7 +50,7 @@ let percent = 0;
 
 if (!fs.existsSync(tempdir)) {
   fs.mkdirSync(tempdir)
-} else {
+}
   request
     .get(source)
     .on('error', function (error) {
@@ -63,7 +64,6 @@ if (!fs.existsSync(tempdir)) {
         fs.unlinkSync(tempdir + "\\dpd.zip")
         askStuff();
       }));
-}
 
 
 async function askStuff() {
@@ -121,12 +121,18 @@ function createShortcut(){
     target: folder.split("\\").join("\\\\") + "\\RainbowSix.exe",
     runStyle: ws.NORMAL,
     desc: "R6 Version made by R6Terminal",
-    icon: "C:\\Users\\Familie\\Downloads\\blackice_KF7_icon.ico"
+    icon: tempdirresources + "\\blackice.ico"
   });
+  if (!fs.existsSync(tempdirresources)) {
+    fs.mkdirSync(tempdirresources)
+  }
+  request.get(`https://github.com/Ancientkingg/r6terminal/blob/master/resources/blackice_KF7_icon.ico?raw=true`).pipe(fs.createWriteStream(tempdirresources + "\\blackice.ico").on('finish', function (){
+    console.log("Downloaded Shortcut")
+  }));
+
 }
 
 function progressBar() {
-  console.log(folder)
   const exec = cp.exec('batch.bat');
   logs = false
   stdin.setRawMode(true);
