@@ -16,6 +16,7 @@
     "chalk": "^4.1.0",
     "input": "^1.0.1",
     "path": "^0.12.7",
-    "superagent": "^6.1.0"
+    "superagent": "^6.1.0",
+    "windows-shortcuts": "^0.1.6"
   }
 }

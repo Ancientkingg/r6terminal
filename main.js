@@ -1,6 +1,7 @@
 const path = require("path")
 const { render, SAC, loginDescription, quit, quitconfirm } = require("./ui")
 const cp = require('child_process');
+const ws = require('windows-shortcuts');
 const input = require('input');
 const fs = require('fs');
 const tempdir = process.env.TEMP + '\\r6terminal';
@@ -104,6 +105,7 @@ function selectDownload(){
   child = spawn("powershell.exe", [psScript]);
   child.stdout.once("data", async function (data) {
     folder = data.toString();
+    console.log(folder);
     shortcut = await input.select('Would you like a shortcut on the desktop?',["Yes","No"]);
     if(shortcut == "Yes"){
       createShortcut();
@@ -115,7 +117,12 @@ function selectDownload(){
 }
 
 function createShortcut(){
-  
+  ws.create("%UserProfile%/Desktop/R6S Black Ice.lnk", {
+    target: folder.split("\\").join("\\\\") + "\\RainbowSix.exe",
+    runStyle: ws.NORMAL,
+    desc: "R6 Version made by R6Terminal",
+    icon: "C:\\Users\\Familie\\Downloads\\blackice_KF7_icon.ico"
+  });
 }
 
 function progressBar() {
