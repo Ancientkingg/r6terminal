@@ -116,7 +116,8 @@ function selectDownload(){
       }
       cp.execSync('mode con: cols=120 lines=30')
       progressBar();
-  });
+  }
+})
   child.stdin.end(); //end input
 }
 
