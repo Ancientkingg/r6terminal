@@ -104,14 +104,18 @@ function selectDownload(){
   var spawn = cp.spawn, child;
   child = spawn("powershell.exe", [psScript]);
   child.stdout.once("data", async function (data) {
-    folder = data.toString();
+    folder = await data.toString();
     console.log(folder);
-    shortcut = await input.select('Would you like a shortcut on the desktop?',["Yes","No"]);
-    if(shortcut == "Yes"){
-      createShortcut();
+    if(folder.startsWith("\n")){
+      return selectDownload()
     }
-    cp.execSync('mode con: cols=120 lines=30')
-    progressBar();
+    if(!folder.startsWith("\n")){
+      shortcut = await input.select('Would you like a shortcut on the desktop?',["Yes","No"]);
+      if(shortcut == "Yes"){
+        createShortcut();
+      }
+      cp.execSync('mode con: cols=120 lines=30')
+      progressBar();
   });
   child.stdin.end(); //end input
 }
