@@ -195,5 +195,9 @@ function progressBar() {
   })
 }
 
-
+// if a new file appears in the download directory, start console.time("dSpeed")
+// if another file appears in the download directory, end console.timeEnd("dSpeed")
+// check size of second file in download dir and do math with dSpeed to get estimated download speed
+// allow user to opt for more accurate estimated download speed and waiting time with nirsoft app_network_counter
+// requires admin privileges though, hence the choice.
 
