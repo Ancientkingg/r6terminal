@@ -13,6 +13,7 @@ const source = `https://github.com/Ancientkingg/r6terminal/blob/master/depotdown
 var stdin = process.stdin;
 let quitapp = 0;
 const chalk = require('chalk');
+const NS_PER_SEC = 1e9;
 let psScript = `
 Function Select-FolderDialog
 {
@@ -51,19 +52,19 @@ let percent = 0;
 if (!fs.existsSync(tempdir)) {
   fs.mkdirSync(tempdir)
 }
-  request
-    .get(source)
-    .on('error', function (error) {
-      console.log(error);
-    })
-    .pipe(fs.createWriteStream(tempdirzip)
-      .on('finish', function () {
-        console.log("Finished downloading!")
-        var zip = new admZip(tempdirzip);
-        zip.extractAllTo(tempdir, false);
-        fs.unlinkSync(tempdir + "\\dpd.zip")
-        askStuff();
-      }));
+request
+  .get(source)
+  .on('error', function (error) {
+    console.log(error);
+  })
+  .pipe(fs.createWriteStream(tempdirzip)
+    .on('finish', function () {
+      console.log("Finished downloading!")
+      var zip = new admZip(tempdirzip);
+      zip.extractAllTo(tempdir, false);
+      fs.unlinkSync(tempdir + "\\dpd.zip")
+      askStuff();
+    }));
 
 
 async function askStuff() {
@@ -71,7 +72,7 @@ async function askStuff() {
   loginDescription();
   name = await input.text('Username:');
   password = await input.password('Password:');
-  confirm = await input.select('Continue to downloading?',["Yes", "No"]);
+  confirm = await input.select('Continue to downloading?', ["Yes", "No"]);
   if (confirm == "Yes") {
     console.clear();
     selectDownload();
@@ -81,7 +82,7 @@ async function askStuff() {
   }
 }
 
-function selectDownload(){ 
+function selectDownload() {
   cp.execSync('mode con: cols=144 lines=20');
   console.log("");
   console.log("");
@@ -104,24 +105,26 @@ function selectDownload(){
   var spawn = cp.spawn, child;
   child = spawn("powershell.exe", [psScript]);
   child.stdout.once("data", async function (data) {
-    folder = await data.toString();
-    console.log(folder);
-    if(folder.startsWith("\n")){
+    folder = await data + "/Rainbow Six Siege Vanilla 1.0";
+    if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder);
+    }
+    if (folder.startsWith("\n")) {
       return selectDownload()
     }
-    if(!folder.startsWith("\n")){
-      shortcut = await input.select('Would you like a shortcut on the desktop?',["Yes","No"]);
-      if(shortcut == "Yes"){
+    if (!folder.startsWith("\n")) {
+      shortcut = await input.select('Would you like a shortcut on the desktop?', ["Yes", "No"]);
+      if (shortcut == "Yes") {
         createShortcut();
       }
       cp.execSync('mode con: cols=120 lines=30')
       progressBar();
-  }
-})
+    }
+  })
   child.stdin.end(); //end input
 }
 
-function createShortcut(){
+function createShortcut() {
   ws.create("%UserProfile%/Desktop/R6S Black Ice.lnk", {
     target: folder.split("\\").join("\\\\") + "\\RainbowSix.exe",
     runStyle: ws.NORMAL,
@@ -131,16 +134,19 @@ function createShortcut(){
   if (!fs.existsSync(tempdirresources)) {
     fs.mkdirSync(tempdirresources)
   }
-  request.get(`https://github.com/Ancientkingg/r6terminal/blob/master/resources/blackice_KF7_icon.ico?raw=true`).pipe(fs.createWriteStream(tempdirresources + "\\blackice.ico").on('finish', function (){
+  request.get(`https://github.com/Ancientkingg/r6terminal/blob/master/resources/blackice_KF7_icon.ico?raw=true`).pipe(fs.createWriteStream(tempdirresources + "\\blackice.ico").on('finish', function () {
     console.log("Downloaded Shortcut")
   }));
 
 }
 
 function progressBar() {
+  var averageETA = 0;
   var timer = false;
-  var time
+  var time;
+  var n = 1;
   time = process.hrtime();
+  var sumETA = 0;
   const exec = cp.exec('batch.bat');
   logs = false
   stdin.setRawMode(true);
@@ -184,39 +190,57 @@ function progressBar() {
       if (/\s\d\d/.test(data)) {
         var diff = process.hrtime(time);
         time = process.hrtime();
-        console.log(diff)
-        // if(timer == false){
-        //   time = process.hrtime();
-        //   timer = true
-        // }else{
-        //   var diff = process.hrtime(time);
-        //   time = process.hrtime();
-        //   timer = false
-        //   console.log(diff)
-        // }
+        nsDiff = diff[0] * NS_PER_SEC + diff[1]
+        sumETA = sumETA + nsDiff;
+        averageETA = sumETA / n;
+        n++;
+        // console.log(n)
+        // console.log(nsDiff)
+        // console.log(sumETA)
+        // console.log(averageETA)
 
+        fs.readdir(folder, function (err, files) {
+          if (files.length) {
 
-        const [, x, ...rest] = data.split(" ")
-        let token = x.replace(",", ".")
-        let partial = token.substr(0, token.length - 1)
-        let percent = Number(partial)
-        // console.log(rest.join(" "))
-        if (quitapp != true) {
-          // render({
-          //   percent,
-          //   currentFile: " " + path.relative(process.cwd(), rest.join(" ").trim())
-          // });
-        }
+            files = files.map(function (fileName) {
+              return {
+                name: fileName,
+                time: fs.statSync(folder + '/' + fileName).mtime.getTime()
+              };
+            })
+              .sort(function (a, b) {
+                return b.time - a.time;
+              })
+              .map(function (v) {
+                return v.name;
+              });
+            const stats = fs.statSync(folder + '/' + files[0]);
+            const fileSizeInBytes = stats.size;
+            console.log(files[0])
+            console.log(fileSizeInBytes)
+            const [, x, ...rest] = data.split(" ")
+            let token = x.replace(",", ".")
+            let partial = token.substr(0, token.length - 1)
+            let percent = Number(partial)
+            // console.log(rest.join(" "))
+            if (quitapp != true) {
+              // render({
+              //   percent,
+              //   currentFile: " " + path.relative(process.cwd(), rest.join(" ").trim())
+              // });
+            }
+          }
+        });
       }
     }
   })
 }
 
-// if a new file appears in the download directory, start console.time("dSpeed")
-// if another file appears in the download directory, end console.timeEnd("dSpeed")
-// check size of second file in download dir and do math with dSpeed to get estimated download speed
-// allow user to opt for more accurate estimated download speed and waiting time with nirsoft app_network_counter
-// requires admin privileges though, hence the choice.
+    // if a new file appears in the download directory, start console.time("dSpeed")
+    // if another file appears in the download directory, end console.timeEnd("dSpeed")
+    // check size of second file in download dir and do math with dSpeed to get estimated download speed
+    // allow user to opt for more accurate estimated download speed and waiting time with nirsoft app_network_counter
+    // requires admin privileges though, hence the choice.
 // add 2fa support
 // add PLAZA support
 
