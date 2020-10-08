@@ -138,6 +138,9 @@ function createShortcut(){
 }
 
 function progressBar() {
+  var timer = false;
+  var time
+  time = process.hrtime();
   const exec = cp.exec('batch.bat');
   logs = false
   stdin.setRawMode(true);
@@ -179,16 +182,30 @@ function progressBar() {
       console.log(data.replace(/(\r\n|\n|\r)/gm, ""))
     } else {
       if (/\s\d\d/.test(data)) {
+        var diff = process.hrtime(time);
+        time = process.hrtime();
+        console.log(diff)
+        // if(timer == false){
+        //   time = process.hrtime();
+        //   timer = true
+        // }else{
+        //   var diff = process.hrtime(time);
+        //   time = process.hrtime();
+        //   timer = false
+        //   console.log(diff)
+        // }
+
+
         const [, x, ...rest] = data.split(" ")
         let token = x.replace(",", ".")
         let partial = token.substr(0, token.length - 1)
         let percent = Number(partial)
         // console.log(rest.join(" "))
         if (quitapp != true) {
-          render({
-            percent,
-            currentFile: " " + path.relative(process.cwd(), rest.join(" ").trim())
-          });
+          // render({
+          //   percent,
+          //   currentFile: " " + path.relative(process.cwd(), rest.join(" ").trim())
+          // });
         }
       }
     }
@@ -200,4 +217,8 @@ function progressBar() {
 // check size of second file in download dir and do math with dSpeed to get estimated download speed
 // allow user to opt for more accurate estimated download speed and waiting time with nirsoft app_network_counter
 // requires admin privileges though, hence the choice.
+// add 2fa support
+// add PLAZA support
 
+
+// dotnet DepotDownloader.dll -app 359550 -depot 377237 -manifest 8358812283631269928 -username ancientkinggg -remember-password -dir "R6Downloads\Y1S0_Vanilla" -validate -max-servers 15 -max-downloads 10
