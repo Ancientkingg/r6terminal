@@ -191,9 +191,9 @@ function progressBar() {
         var diff = process.hrtime(time);
         time = process.hrtime();
         nsDiff = diff[0] * NS_PER_SEC + diff[1]
-        sumETA = sumETA + nsDiff;
-        averageETA = sumETA / n;
-        n++;
+        // sumETA = sumETA + nsDiff;
+        // averageETA = sumETA / n;
+        // n++;
         // console.log(n)
         // console.log(nsDiff)
         // console.log(sumETA)
