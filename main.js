@@ -135,14 +135,15 @@ function createShortcut() {
     fs.mkdirSync(tempdirresources)
   }
   request.get(`https://github.com/Ancientkingg/r6terminal/blob/master/resources/blackice_KF7_icon.ico?raw=true`).pipe(fs.createWriteStream(tempdirresources + "\\blackice.ico").on('finish', function () {
-    console.log("Downloaded Shortcut")
+    // console.log("Downloaded Shortcut")
   }));
 
 }
 
 function progressBar() {
   var time;
-  var n = 1;
+  var n = 0;
+  var sumDownloadSpeed = 0;
   time = process.hrtime();
   let dirFileSize = 0;
   const exec = cp.exec('batch.bat');
@@ -223,15 +224,19 @@ function progressBar() {
             let partial = token.substr(0, token.length - 1)
             let percent = Number(partial)
             // everything is in MB
-            let packageFileSize = 500000 // fill in total size of package in MB
+            let packageFileSize = 500 // fill in total size of package in MB
             dirFileSize = dirFileSize + fileSizeInBytes / 10e6
             remainingFileSize = packageFileSize - dirFileSize
             let downloadSpeed = (fileSizeInBytes / 10e6) / (nsDiff / 10e9) // mb/s
-            let remainingTimeNumber = remainingFileSize / downloadSpeed // is in seconds
+            n++;
+            sumDownloadSpeed = sumDownloadSpeed + downloadSpeed
+            averageDownloadSpeed = sumDownloadSpeed / n;
+            let remainingTimeNumber = remainingFileSize / averageDownloadSpeed // is in seconds
             let rtH = Math.floor(remainingTimeNumber / 3600) // hours
             let rtM = Math.floor((remainingTimeNumber % 3600) / 60) // minutes
             let rtS = Math.floor(remainingTimeNumber % 3600 % 60) // seconds
-            let remainingTime = remainingTimeNumber + " | "  + rtH + " | " + rtM + " | " + rtS
+            let remainingTime =  "Estimated time remaining: "  + chalk.red(rtH) + " hours " + chalk.green(rtM) + " minutes " + chalk.blue(rtS) + " seconds"
+            // let remainingTime = averageDownloadSpeed + "  " + downloadSpeed + "  " + remainingTimeNumber + "  " + remainingFileSize
             if (quitapp != true) {
               render({
                 percent,

@@ -130,7 +130,7 @@ function render({
                 }
             }),
             new Text({
-                x: Math.floor(width/2+15),
+                x: Math.floor(width/2-27),
                 y: Math.floor(height/2 + 5),
                 props: {
                     text: remainingTime
