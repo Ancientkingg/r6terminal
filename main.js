@@ -141,12 +141,10 @@ function createShortcut() {
 }
 
 function progressBar() {
-  var averageETA = 0;
-  var timer = false;
   var time;
   var n = 1;
   time = process.hrtime();
-  var sumETA = 0;
+  let dirFileSize = 0;
   const exec = cp.exec('batch.bat');
   logs = false
   stdin.setRawMode(true);
@@ -191,6 +189,8 @@ function progressBar() {
         var diff = process.hrtime(time);
         time = process.hrtime();
         nsDiff = diff[0] * NS_PER_SEC + diff[1]
+        // I don't need the average time, I need the time it needed to download that specific file 
+        // and from that get the average
         // sumETA = sumETA + nsDiff;
         // averageETA = sumETA / n;
         // n++;
@@ -216,18 +216,28 @@ function progressBar() {
               });
             const stats = fs.statSync(folder + '/' + files[0]);
             const fileSizeInBytes = stats.size;
-            console.log(files[0])
-            console.log(fileSizeInBytes)
+            // console.log(files[0])
+            // console.log(fileSizeInBytes)
             const [, x, ...rest] = data.split(" ")
             let token = x.replace(",", ".")
             let partial = token.substr(0, token.length - 1)
             let percent = Number(partial)
-            // console.log(rest.join(" "))
+            // everything is in MB
+            let packageFileSize = 500000 // fill in total size of package in MB
+            dirFileSize = dirFileSize + fileSizeInBytes / 10e6
+            remainingFileSize = packageFileSize - dirFileSize
+            let downloadSpeed = (fileSizeInBytes / 10e6) / (nsDiff / 10e9) // mb/s
+            let remainingTimeNumber = remainingFileSize / downloadSpeed // is in seconds
+            let rtH = Math.floor(remainingTimeNumber / 3600) // hours
+            let rtM = Math.floor((remainingTimeNumber % 3600) / 60) // minutes
+            let rtS = Math.floor(remainingTimeNumber % 3600 % 60) // seconds
+            let remainingTime = remainingTimeNumber + " | "  + rtH + " | " + rtM + " | " + rtS
             if (quitapp != true) {
-              // render({
-              //   percent,
-              //   currentFile: " " + path.relative(process.cwd(), rest.join(" ").trim())
-              // });
+              render({
+                percent,
+                currentFile: " " + path.relative(process.cwd(), rest.join(" ").trim()),
+                remainingTime
+              });
             }
           }
         });

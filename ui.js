@@ -95,7 +95,8 @@ const ui = new Root(process.stdout);
 function render({
     percent,
     currentFile = "you can put the progress bar description here",
-    max = 100
+    max = 100,
+    remainingTime
 }) {
     ui.render(new Component({
         x: 0, y: 0, children: [
@@ -126,6 +127,13 @@ function render({
                 y: height,
                 props: {
                     text: "Press Q to quit"
+                }
+            }),
+            new Text({
+                x: Math.floor(width/2+15),
+                y: Math.floor(height/2 + 5),
+                props: {
+                    text: remainingTime
                 }
             })
         ]
