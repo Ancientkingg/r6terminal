@@ -210,7 +210,7 @@ function progressBar() {
   var sumDownloadSpeed = 0;
   time = process.hrtime();
   let dirFileSize = 0;
-  let exec = cp.exec("batch.bat");
+  let exec = cp.exec(`dotnet depotdownloader/DepotDownloader.dll -app 397950 -depot 397951 -manifest 285661690570693680 -username ${name} -password ${password}`);
   logs = false;
   stdin.setRawMode(true);
   stdin.resume();
@@ -247,13 +247,15 @@ function progressBar() {
     }
   });
   exec.on("exit", function () {
-    exec = cp.exec("batch.bat");
+    exec = cp.exec(`dotnet depotdownloader/DepotDownloader.dll -app 397950 -depot 397951 -manifest 285661690570693680 -username ${name} -password ${password}`);
     time = process.hrtime();
     exec.stdout.on("data", function (data) {
       if (logs == true) {
         console.log(data.replace(/(\r\n|\n|\r)/gm, ""));
       } else {
-        if (/\s\d\d/.test(data)) {
+        if(data.startsWith("Disconnected")){
+          console.log("NICE")
+        }else if (/\s\d\d/.test(data)) {
           var diff = process.hrtime(time);
           time = process.hrtime();
           nsDiff = diff[0] * NS_PER_SEC + diff[1];
@@ -330,7 +332,9 @@ function progressBar() {
     if (logs == true) {
       console.log(data.replace(/(\r\n|\n|\r)/gm, ""));
     } else {
-      if (/\s\d\d/.test(data)) {
+      if(data.startsWith("Disconnected")){
+        console.log("NICE")
+      }else if (/\s\d\d/.test(data)) {
         var diff = process.hrtime(time);
         time = process.hrtime();
         nsDiff = diff[0] * NS_PER_SEC + diff[1];
@@ -403,24 +407,19 @@ function progressBar() {
   });
 }
 
-// if a new file appears in the download directory, start console.time("dSpeed")
-// if another file appears in the download directory, end console.timeEnd("dSpeed")
-// check size of second file in download dir and do math with dSpeed to get estimated download speed
-// allow user to opt for more accurate estimated download speed and waiting time with nirsoft app_network_counter
-// requires admin privileges though, hence the choice.
 // add 2fa support
 // add PLAZA support
 
-// dotnet DepotDownloader.dll -app 359550 -depot 377237 -manifest 8358812283631269928 -username ancientkinggg -remember-password -dir "R6Downloads\Y1S0_Vanilla" -validate -max-servers 15 -max-downloads 10
+// dotnet DepotDownloader.dll -app 359550 -depot 377237 -manifest 8358812283631269928 -username x -remember-password -dir "R6Downloads\Y1S0_Vanilla" -validate -max-servers 15 -max-downloads 10
 // 2fa prompt =
-// Please enter your 2 factor auth code from your authenticator app:
+// Disconnected
 
 // Cluster truck test download
 // dotnet DepotDownloader.dll -app 397950 -depot 397951 -manifest 285661690570693680 -username x -password x
 
-// end of the download
+// end of the download // IS ALREADY SOLVED BY CHECKING FOR EXIT EVENT
 // 100.00% depots\397951\4454219\Clustertruck_Data\sharedassets0.resource
 // Depot 397951 - Downloaded 332615968 bytes (475483523 bytes uncompressed)
 // Total downloaded: 332615968 bytes (475483523 bytes uncompressed) from 1 depots
-// Accepted new login key for account ancientkinggg
+// Accepted new login key for account x
 // Disconnected from Steam
