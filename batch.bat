@@ -1,5 +1,7 @@
 @echo off
 set /A percent=0
+set /P twoFA="Please enter your 2fa auth code: "
+echo %twoFA%
 :percent
 PING localhost -n 2 >NUL
 set /A percent=%percent%+1

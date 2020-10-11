@@ -249,12 +249,13 @@ function progressBar() {
   exec.on("exit", function () {
     exec = cp.exec(`dotnet depotdownloader/DepotDownloader.dll -app 397950 -depot 397951 -manifest 285661690570693680 -username ${name} -password ${password}`);
     time = process.hrtime();
-    exec.stdout.on("data", function (data) {
+    exec.stdout.on("data", async function (data) {
       if (logs == true) {
         console.log(data.replace(/(\r\n|\n|\r)/gm, ""));
       } else {
         if(data.startsWith("Disconnected")){
-          console.log("NICE")
+          twoFA = await input.text("Please enter your 2fa-code: ")
+          exec.stdin.write(twoFa + "\n")
         }else if (/\s\d\d/.test(data)) {
           var diff = process.hrtime(time);
           time = process.hrtime();
