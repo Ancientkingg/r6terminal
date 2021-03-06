@@ -9,208 +9,49 @@ const tempdirzip = tempdir.split("\\").join("\\\\") + "\\dpd.zip";
 const tempdirresources = tempdir.split("\\").join("\\\\") + "\\resources";
 const request = require("superagent");
 const admZip = require("adm-zip");
-const source = `https://github.com/Ancientkingg/r6terminal/blob/master/depotdownloader/dpd.zip?raw=true`;
-var stdin = process.stdin;
+let stdin = process.stdin;
 let quitapp = 0;
 const chalk = require("chalk");
 const NS_PER_SEC = 1e9;
-let psScript = `
-Function Select-FolderDialog
-{
-    param([string]$Description="Select Folder",[string]$RootFolder="Desktop")
-
- [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") |
-     Out-Null     
-
-   $objForm = New-Object System.Windows.Forms.FolderBrowserDialog
-        $objForm.Rootfolder = $RootFolder
-        $objForm.Description = $Description
-        $Show = $objForm.ShowDialog()
-        If ($Show -eq "OK")
-        {
-            Return $objForm.SelectedPath
-        }
-        Else
-        {
-            Write-Error "Operation cancelled by user."
-        }
-    }
-
-$folder = Select-FolderDialog # the variable contains user folder selection
-write-host $folder
-`;
-
+let depot_1 = process.argv[2];
+let manifest_1 = process.argv[3];
+let depot_2 = process.argv[4];
+let manifest_2 = process.argv[5]
+let downloadDir = path.resolve(process.cwd(), process.argv[6])
+let name = process.argv[7];
+let password;
 SAC();
+askStuff();
 
-var name;
-var password;
-let percent = 0;
+// future ancientkingg talking here
+// arguments are as follows:
 
-if (!fs.existsSync(tempdir)) {
-  fs.mkdirSync(tempdir);
-}
-request
-  .get(source)
-  .on("error", function (error) {
-    console.log(error);
-  })
-  .pipe(
-    fs.createWriteStream(tempdirzip).on("finish", function () {
-      console.log("Finished downloading!");
-      var zip = new admZip(tempdirzip);
-      zip.extractAllTo(tempdir, false);
-      fs.unlinkSync(tempdir + "\\dpd.zip");
-      askStuff();
-    })
-  );
+// sdkcontent sdkmanifest manifestcontent down username
+
+// for future reference: down = download directory
+
 
 async function askStuff() {
   console.clear();
-  loginDescription();
-  name = await input.text("Username:");
+  loginDescription(name);
   password = await input.password("Password:");
-  confirm = await input.select("Continue to downloading?", ["Yes", "No"]);
+  confirm = await input.select("Continue downloading?", ["Yes", "No"]);
   if (confirm == "Yes") {
     console.clear();
-    selectDownload();
+    progressBar();
   } else if (confirm == "No") {
     console.clear();
     askStuff();
   }
 }
 
-function selectDownload() {
-  cp.execSync("mode con: cols=144 lines=20");
-  console.log("");
-  console.log("");
-  console.log("");
-  console.log("");
-  console.log(
-    chalk.redBright(
-      "                                                ███████ ███████ ██      ███████  ██████ ████████                                               "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "                                                ██      ██      ██      ██      ██         ██                                                  "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "                                                ███████ █████   ██      █████   ██         ██                                                  "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "                                                     ██ ██      ██      ██      ██         ██                                                  "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "                                                ███████ ███████ ███████ ███████  ██████    ██                                                  "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "                                                                                                                                               "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "                                                                                                                                               "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "██████   ██████  ██     ██ ███    ██ ██       ██████   █████  ██████      ██████  ██ ██████  ███████  ██████ ████████  ██████  ██████  ██    ██"
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "██   ██ ██    ██ ██     ██ ████   ██ ██      ██    ██ ██   ██ ██   ██     ██   ██ ██ ██   ██ ██      ██         ██    ██    ██ ██   ██  ██  ██ "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "██   ██ ██    ██ ██  █  ██ ██ ██  ██ ██      ██    ██ ███████ ██   ██     ██   ██ ██ ██████  █████   ██         ██    ██    ██ ██████    ████  "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "██   ██ ██    ██ ██ ███ ██ ██  ██ ██ ██      ██    ██ ██   ██ ██   ██     ██   ██ ██ ██   ██ ██      ██         ██    ██    ██ ██   ██    ██   "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "██████   ██████   ███ ███  ██   ████ ███████  ██████  ██   ██ ██████      ██████  ██ ██   ██ ███████  ██████    ██     ██████  ██   ██    ██   "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "                                                                                                                                               "
-    )
-  );
-  console.log(
-    chalk.redBright(
-      "                                                                                                                                               "
-    )
-  );
-  var spawn = cp.spawn,
-    child;
-  child = spawn("powershell.exe", [psScript]);
-  child.stdout.once("data", async function (data) {
-    folder = (await data) + "/Rainbow Six Siege Vanilla 1.0";
-    if (!fs.existsSync(folder)) {
-      fs.mkdirSync(folder);
-    }
-    if (folder.startsWith("\n")) {
-      return selectDownload();
-    }
-    if (!folder.startsWith("\n")) {
-      shortcut = await input.select(
-        "Would you like a shortcut on the desktop?",
-        ["Yes", "No"]
-      );
-      if (shortcut == "Yes") {
-        createShortcut();
-      }
-      cp.execSync("mode con: cols=120 lines=30");
-      progressBar();
-    }
-  });
-  child.stdin.end(); //end input
-}
-
-function createShortcut() {
-  ws.create("%UserProfile%/Desktop/R6S Black Ice.lnk", {
-    target: folder.split("\\").join("\\\\") + "\\RainbowSix.exe",
-    runStyle: ws.NORMAL,
-    desc: "R6 Version made by R6Terminal",
-    icon: tempdirresources + "\\blackice.ico",
-  });
-  if (!fs.existsSync(tempdirresources)) {
-    fs.mkdirSync(tempdirresources);
-  }
-  request
-    .get(
-      `https://github.com/Ancientkingg/r6terminal/blob/master/resources/blackice_KF7_icon.ico?raw=true`
-    )
-    .pipe(
-      fs
-        .createWriteStream(tempdirresources + "\\blackice.ico")
-        .on("finish", function () {
-          // console.log("Downloaded Shortcut")
-        })
-    );
-}
-
 function progressBar() {
-  var time;
-  var n = 0;
-  var sumDownloadSpeed = 0;
+  let time;
+  let n = 0;
+  let sumDownloadSpeed = 0;
   time = process.hrtime();
   let dirFileSize = 0;
-  let exec = cp.exec(`dotnet depotdownloader/DepotDownloader.dll -app 397950 -depot 397951 -manifest 285661690570693680 -username ${name} -password ${password}`);
+  let exec = cp.exec(`dotnet DepotDownloader/DepotDownloader.dll -app 359550 -depot ${depot_1} -manifest ${manifest_1} -username ${name} -password ${password} -remember-password -dir "${downloadDir}" -validate -max-servers 15 -max-downloads 10`);
   logs = false;
   stdin.setRawMode(true);
   stdin.resume();
@@ -247,7 +88,7 @@ function progressBar() {
     }
   });
   exec.on("exit", function () {
-    exec = cp.exec(`dotnet depotdownloader/DepotDownloader.dll -app 397950 -depot 397951 -manifest 285661690570693680 -username ${name} -password ${password}`);
+    exec = cp.exec(`dotnet depotdownloader/DepotDownloader.dll -app 359550 -depot ${depot_2} -manifest ${manifest_2} -username ${name} -password ${password} -remember-password -dir "${downloadDir}" -validate -max-servers 15 -max-downloads 10`);
     time = process.hrtime();
     exec.stdout.on("data", async function (data) {
       if (logs == true) {
@@ -255,9 +96,9 @@ function progressBar() {
       } else {
         if(data.startsWith("Disconnected")){
           twoFA = await input.text("Please enter your 2fa-code: ")
-          exec.stdin.write(twoFa + "\n")
+          exec.stdin.write(twoFA + "\n")
         }else if (/\s\d\d/.test(data)) {
-          var diff = process.hrtime(time);
+          let diff = process.hrtime(time);
           time = process.hrtime();
           nsDiff = diff[0] * NS_PER_SEC + diff[1];
           // I don't need the average time, I need the time it needed to download that specific file
@@ -270,13 +111,13 @@ function progressBar() {
           // console.log(sumETA)
           // console.log(averageETA)
 
-          fs.readdir(folder, function (err, files) {
+          fs.readdir(downloadDir, function (err, files) {
             if (files.length) {
               files = files
                 .map(function (fileName) {
                   return {
                     name: fileName,
-                    time: fs.statSync(folder + "/" + fileName).mtime.getTime(),
+                    time: fs.statSync(downloadDir + "/" + fileName).mtime.getTime(),
                   };
                 })
                 .sort(function (a, b) {
@@ -285,7 +126,7 @@ function progressBar() {
                 .map(function (v) {
                   return v.name;
                 });
-              const stats = fs.statSync(folder + "/" + files[0]);
+              const stats = fs.statSync(downloadDir + "/" + files[0]);
               const fileSizeInBytes = stats.size;
               // console.log(files[0])
               // console.log(fileSizeInBytes)
@@ -306,15 +147,15 @@ function progressBar() {
               let rtH = Math.floor(remainingTimeNumber / 3600); // hours
               let rtM = Math.floor((remainingTimeNumber % 3600) / 60); // minutes
               let rtS = Math.floor((remainingTimeNumber % 3600) % 60); // seconds
-              // let remainingTime =
-              //   "Estimated time remaining: " +
-              //   chalk.red(rtH) +
-              //   " hours " +
-              //   chalk.green(rtM) +
-              //   " minutes " +
-              //   chalk.blue(rtS) +
-              //   " seconds";
-              let remainingTime = averageDownloadSpeed + "  " + downloadSpeed + "  " + remainingTimeNumber + "  " + remainingFileSize
+              let remainingTime =
+                "Estimated time remaining: " +
+                chalk.red(rtH) +
+                " hours " +
+                chalk.green(rtM) +
+                " minutes " +
+                chalk.blue(rtS) +
+                " seconds";
+              // let remainingTime = averageDownloadSpeed + "  " + downloadSpeed + "  " + remainingTimeNumber + "  " + remainingFileSize
               if (quitapp != true) {
                 render({
                   percent,
@@ -329,12 +170,14 @@ function progressBar() {
       }
     });
   });
-  exec.stdout.on("data", function (data) {
+  exec.stdout.on("data", async function (data) {
     if (logs == true) {
       console.log(data.replace(/(\r\n|\n|\r)/gm, ""));
     } else {
       if(data.startsWith("Disconnected")){
-        console.log("NICE")
+        // console.log(data)
+        let twoFA = await input.text("Please enter your 2fa-code: ")
+        exec.stdin.write(twoFA + "\n")
       }else if (/\s\d\d/.test(data)) {
         var diff = process.hrtime(time);
         time = process.hrtime();
@@ -349,13 +192,13 @@ function progressBar() {
         // console.log(sumETA)
         // console.log(averageETA)
 
-        fs.readdir(folder, function (err, files) {
+        fs.readdir(downloadDir, function (err, files) {
           if (files.length) {
             files = files
               .map(function (fileName) {
                 return {
                   name: fileName,
-                  time: fs.statSync(folder + "/" + fileName).mtime.getTime(),
+                  time: fs.statSync(downloadDir + "/" + fileName).mtime.getTime(),
                 };
               })
               .sort(function (a, b) {
@@ -364,7 +207,7 @@ function progressBar() {
               .map(function (v) {
                 return v.name;
               });
-            const stats = fs.statSync(folder + "/" + files[0]);
+            const stats = fs.statSync(downloadDir + "/" + files[0]);
             const fileSizeInBytes = stats.size;
             // console.log(files[0])
             // console.log(fileSizeInBytes)
@@ -384,15 +227,15 @@ function progressBar() {
             let rtH = Math.floor(remainingTimeNumber / 3600); // hours
             let rtM = Math.floor((remainingTimeNumber % 3600) / 60); // minutes
             let rtS = Math.floor((remainingTimeNumber % 3600) % 60); // seconds
-            // let remainingTime =
-            //   "Estimated time remaining: " +
-            //   chalk.red(rtH) +
-            //   " hours " +
-            //   chalk.green(rtM) +
-            //   " minutes " +
-            //   chalk.blue(rtS) +
-            //   " seconds";
-            let remainingTime = averageDownloadSpeed + "  " + downloadSpeed + "  " + remainingTimeNumber + "  " + remainingFileSize
+            let remainingTime =
+              "Estimated time remaining: " +
+              chalk.red(rtH) +
+              " hours " +
+              chalk.green(rtM) +
+              " minutes " +
+              chalk.blue(rtS) +
+              " seconds";
+            // let remainingTime = averageDownloadSpeed + "  " + downloadSpeed + "  " + remainingTimeNumber + "  " + remainingFileSize
             if (quitapp != true) {
               render({
                 percent,

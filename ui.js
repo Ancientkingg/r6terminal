@@ -168,7 +168,7 @@ function SAC(){
     }));
 }
 
-function loginDescription(){
+function loginDescription(username){
     ui.render(new Component({
         x: 0, y: 0, children: [
             new Text({
@@ -183,6 +183,13 @@ function loginDescription(){
                 y: Math.floor(height-1),
                 props: {
                     text: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                }
+            }),
+            new Text({
+                x: 0,
+                y: Math.floor(height),
+                props: {
+                    text: `Using ${username} as steam username`
                 }
             })
         ]
